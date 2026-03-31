@@ -26,6 +26,84 @@ Many thanks to [rayhaanj](https://github.com/rayhaanj), [Mechazawa](https://gith
 
 That screenshot is fake, by the way. I never reached 2048 :smile:
 
+## Deployment
+
+### Docker
+
+```bash
+docker run -p 8080:8080 ghcr.io/bgulla/2048:latest
+```
+
+### Helm (local)
+
+```bash
+make install
+```
+
+### Rancher Fleet (fleet.yaml bundle)
+
+Add a `fleet.yaml` to a GitRepo bundle pointed at this repo:
+
+```yaml
+defaultNamespace: 2048
+
+helm:
+  repo: https://bgulla.github.io/charts
+  chart: kitchensink
+  releaseName: 2048
+  takeOwnership: true
+  values:
+    fullnameOverride: 2048
+    image:
+      repository: ghcr.io/bgulla/2048
+      tag: latest
+    service:
+      port: 8080
+
+targets:
+  - clusterSelector:
+      matchLabels:
+        management.cattle.io/cluster-display-name: your-cluster
+```
+
+Add this repo to Fleet under **Rancher > Continuous Delivery > Git Repos**, pointing to `github.com/bgulla/2048` with the path set to the directory containing `fleet.yaml`.
+
+### HelmOp (Fleet CRD)
+
+Apply directly to your fleet-default namespace:
+
+```yaml
+apiVersion: fleet.cattle.io/v1alpha1
+kind: HelmOp
+metadata:
+  name: 2048
+  namespace: fleet-default
+spec:
+  defaultNamespace: 2048
+  helm:
+    releaseName: 2048
+    repo: https://bgulla.github.io/charts
+    chart: kitchensink
+    takeOwnership: true
+    values:
+      fullnameOverride: 2048
+      image:
+        repository: ghcr.io/bgulla/2048
+        tag: latest
+      service:
+        port: 8080
+  targets:
+    - clusterSelector:
+        matchLabels:
+          management.cattle.io/cluster-display-name: your-cluster
+```
+
+```bash
+kubectl apply -f helmop.yaml
+```
+
+Fleet will reconcile the HelmOp and install the release on any cluster matching the target selector.
+
 ## Contributing
 Changes and improvements are more than welcome! Feel free to fork and open a pull request. Please make your changes in a specific branch and request to pull into `master`! If you can, please make sure the game fully works before sending the PR, as that will help speed up the process.
 
