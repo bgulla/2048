@@ -59,6 +59,16 @@ helm:
       tag: latest
     service:
       port: 8080
+    podSecurityContext:
+      runAsNonRoot: true
+      runAsUser: 65532
+      runAsGroup: 65532
+    securityContext:
+      allowPrivilegeEscalation: false
+      runAsNonRoot: true
+      runAsUser: 65532
+      capabilities:
+        drop: [ALL]
 
 targets:
   - clusterSelector:
@@ -92,6 +102,16 @@ spec:
         tag: latest
       service:
         port: 8080
+      podSecurityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+      securityContext:
+        allowPrivilegeEscalation: false
+        runAsNonRoot: true
+        runAsUser: 65532
+        capabilities:
+          drop: [ALL]
   targets:
     - clusterSelector:
         matchLabels:

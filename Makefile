@@ -14,7 +14,14 @@ install:
 		--set fullnameOverride=$(RELEASE) \
 		--set image.repository=$(IMAGE) \
 		--set image.tag=$(TAG) \
-		--set service.port=8080
+		--set service.port=8080 \
+		--set podSecurityContext.runAsNonRoot=true \
+		--set podSecurityContext.runAsUser=65532 \
+		--set podSecurityContext.runAsGroup=65532 \
+		--set securityContext.allowPrivilegeEscalation=false \
+		--set securityContext.runAsNonRoot=true \
+		--set securityContext.runAsUser=65532 \
+		--set "securityContext.capabilities.drop={ALL}"
 
 upgrade: install
 
